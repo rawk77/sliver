@@ -20,7 +20,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 
 ```bash
 cd sliver
-./go-assets.sh
+./go-assets.sh  # on first setup only
 make
 ```
 
