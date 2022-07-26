@@ -1883,15 +1883,15 @@ func BindCommands(con *console.SliverConsoleClient) {
 		Help:     "Scan the network for open ports",
 		LongHelp: help.GetHelpFor([]string{consts.PortscanStr}),
 		Flags: func(f *grumble.Flags) {
-			f.Bool("A", "all", false, "show all network adapters (default only shows IPv4)")
-
 			f.Int("t", "timeout", defaultTimeout, "command timeout in seconds")
 		},
+		Args: func(a *grumble.Args) {
+			a.String("host", "hosts to scan")
+			a.String("port", "ports to scan")
+		},
 		Run: func(ctx *grumble.Context) error {
-			con.Println()
-			network.PortscanCmd(ctx, con)
-			con.Println()
-			return nil
+			err := network.PortscanCmd(ctx, con)
+			return err
 		},
 		HelpGroup: consts.SliverHelpGroup,
 	})

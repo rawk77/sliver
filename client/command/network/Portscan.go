@@ -20,34 +20,45 @@ package network
 
 import (
 	"context"
-	"fmt"
-	"sort"
-	"strconv"
-	"strings"
 
-	"github.com/bishopfox/sliver/client/command/settings"
 	"github.com/bishopfox/sliver/client/console"
 	"github.com/bishopfox/sliver/protobuf/clientpb"
 	"github.com/bishopfox/sliver/protobuf/sliverpb"
 	"github.com/desertbit/grumble"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"google.golang.org/protobuf/proto"
 )
 
 // PortscanCmd - Display network interfaces on the remote system
-func PortscanCmd(ctx *grumble.Context, con *console.SliverConsoleClient) {
+func PortscanCmd(ctx *grumble.Context, con *console.SliverConsoleClient) (err error) {
 	session, beacon := con.ActiveTarget.GetInteractive()
 	if session == nil && beacon == nil {
 		return
 	}
+
+	host := ctx.Args.String("host")
+	if host == "" {
+		con.PrintErrorf("Missing parameter: host\n")
+		return
+	}
+
+	port := ctx.Args.String("port")
+	if port == "" {
+		con.PrintErrorf("Missing parameter: port\n")
+		return
+	}
+
 	portscan, err := con.Rpc.Portscan(context.Background(), &sliverpb.PortscanReq{
 		Request: con.ActiveTarget.Request(ctx),
+		Host:	host,
+		Port:	port,
 	})
 	if err != nil {
 		con.PrintErrorf("%s\n", err)
 		return
 	}
-	all := ctx.Flags.Bool("all")
+
+	portscan.Host, portscan.Port = host, port
+
 	if portscan.Response != nil && portscan.Response.Async {
 		con.AddBeaconCallback(portscan.Response.TaskID, func(task *clientpb.BeaconTask) {
 			err = proto.Unmarshal(task.Response, portscan)
@@ -55,72 +66,19 @@ func PortscanCmd(ctx *grumble.Context, con *console.SliverConsoleClient) {
 				con.PrintErrorf("Failed to decode response %s\n", err)
 				return
 			}
-			PrintPortscan(portscan, all, con)
 		})
 		con.PrintAsyncResponse(portscan.Response)
 	} else {
-		PrintPortscan(portscan, all, con)
+		PrintPortscan(portscan, con)
 	}
+	return
 }
 
 // PrintPortscan - Print the portscan response
-func PrintPortscan(portscan *sliverpb.Portscan, all bool, con *console.SliverConsoleClient) {
-	var err error
-	interfaces := portscan.NetInterfaces
-	sort.Slice(interfaces, func(i, j int) bool {
-		return interfaces[i].Index < interfaces[j].Index
-	})
-	hidden := 0
-	for index, iface := range interfaces {
-		tw := table.NewWriter()
-		tw.SetStyle(settings.GetTableWithBordersStyle(con))
-		tw.SetTitle(fmt.Sprintf(console.Bold+"%s"+console.Normal, iface.Name))
-		tw.SetColumnConfigs([]table.ColumnConfig{
-			{Name: "#", AutoMerge: true},
-			{Name: "IP Address", AutoMerge: true},
-			{Name: "MAC Address", AutoMerge: true},
-		})
-		rowConfig := table.RowConfig{AutoMerge: true}
-		tw.AppendHeader(table.Row{"#", "IP Addresses", "MAC Address"}, rowConfig)
-		macAddress := ""
-		if 0 < len(iface.MAC) {
-			macAddress = iface.MAC
-		}
-		ips := []string{}
-		for _, ip := range iface.IPAddresses {
-			// Try to find local IPs and colorize them
-			subnet := -1
-			if strings.Contains(ip, "/") {
-				parts := strings.Split(ip, "/")
-				subnetStr := parts[len(parts)-1]
-				subnet, err = strconv.Atoi(subnetStr)
-				if err != nil {
-					subnet = -1
-				}
-			}
-			if 0 < subnet && subnet <= 32 && !isLoopback(ip) {
-				ips = append(ips, fmt.Sprintf(console.Bold+console.Green+"%s"+console.Normal, ip))
-			} else if all {
-				ips = append(ips, fmt.Sprintf("%s", ip))
-			}
-		}
-		if !all && len(ips) < 1 {
-			hidden++
-			continue
-		}
-		if 0 < len(ips) {
-			for _, ip := range ips {
-				tw.AppendRow(table.Row{iface.Index, ip, macAddress}, rowConfig)
-			}
-		} else {
-			tw.AppendRow(table.Row{iface.Index, " ", macAddress}, rowConfig)
-		}
-		con.Printf("%s\n", tw.Render())
-		if index+1 < len(interfaces) {
-			con.Println()
-		}
+func PrintPortscan(portscan *sliverpb.Portscan, con *console.SliverConsoleClient) {
+	if portscan.Response != nil && portscan.Response.Err != "" {
+		con.PrintErrorf("%s\n", portscan.Response.Err)
+		return
 	}
-	if !all {
-		con.Printf("%d adapters not shown.\n", hidden)
-	}
+	con.PrintInfof("%s > %s\n", portscan.Host, portscan.Port)
 }

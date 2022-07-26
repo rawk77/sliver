@@ -285,7 +285,7 @@ const (
 	// MsgCurrentTokenOwner - Replies with the current thread owner (resp to MsfCurrentToken)
 	MsgCurrentTokenOwner
 
-	// MsgPortscanReq - Portscan (network interface config) request
+	// MsgPortscanReq - Scan network hosts for open ports
 	MsgPortscanReq
 	// MsgPortscan - Portscan response
 	MsgPortscan
