@@ -141,6 +141,17 @@ message Ifconfig {
   commonpb.Response Response = 9;
 }
 
+// PortscanReq - Request the implant to list network interfaces
+message PortscanReq {
+  commonpb.Request Request = 9;
+}
+
+message Portscan {
+  repeated NetInterface NetInterfaces = 1;
+
+  commonpb.Response Response = 9;
+}
+
 message NetInterface {
   int32 Index = 1;
   string Name = 2;

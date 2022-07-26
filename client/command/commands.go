@@ -1878,6 +1878,24 @@ func BindCommands(con *console.SliverConsoleClient) {
 		HelpGroup: consts.SliverHelpGroup,
 	})
 
+	con.App.AddCommand(&grumble.Command{
+		Name:     consts.PortscanStr,
+		Help:     "Scan the network for open ports",
+		LongHelp: help.GetHelpFor([]string{consts.PortscanStr}),
+		Flags: func(f *grumble.Flags) {
+			f.Bool("A", "all", false, "show all network adapters (default only shows IPv4)")
+
+			f.Int("t", "timeout", defaultTimeout, "command timeout in seconds")
+		},
+		Run: func(ctx *grumble.Context) error {
+			con.Println()
+			network.PortscanCmd(ctx, con)
+			con.Println()
+			return nil
+		},
+		HelpGroup: consts.SliverHelpGroup,
+	})
+
 	// [ Processes ] ---------------------------------------------
 
 	con.App.AddCommand(&grumble.Command{

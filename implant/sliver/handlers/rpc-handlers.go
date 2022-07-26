@@ -173,6 +173,43 @@ func ifconfig() *sliverpb.Ifconfig {
 	return interfaces
 }
 
+func portscanHandler(_ []byte, resp RPCResponse) {
+	interfaces := portscan()
+	// {{if .Config.Debug}}
+	log.Printf("network interfaces: %#v", interfaces)
+	// {{end}}
+	data, err := proto.Marshal(interfaces)
+	resp(data, err)
+}
+
+func portscan() *sliverpb.Portscan {
+	netInterfaces, err := net.Interfaces()
+	if err != nil {
+		return nil
+	}
+
+	interfaces := &sliverpb.Portscan{
+		NetInterfaces: []*sliverpb.NetInterface{},
+	}
+	for _, iface := range netInterfaces {
+		netIface := &sliverpb.NetInterface{
+			Index: int32(iface.Index),
+			Name:  iface.Name,
+		}
+		if iface.HardwareAddr != nil {
+			netIface.MAC = iface.HardwareAddr.String()
+		}
+		addresses, err := iface.Addrs()
+		if err == nil {
+			for _, address := range addresses {
+				netIface.IPAddresses = append(netIface.IPAddresses, address.String())
+			}
+		}
+		interfaces.NetInterfaces = append(interfaces.NetInterfaces, netIface)
+	}
+	return interfaces
+}
+
 func screenshotHandler(data []byte, resp RPCResponse) {
 	sc := &sliverpb.ScreenshotReq{}
 	err := proto.Unmarshal(data, sc)
