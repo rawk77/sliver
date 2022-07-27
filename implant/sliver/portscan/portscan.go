@@ -14,12 +14,15 @@ type Config struct {
 var config Config
 
 func initConfig() {
-	config.numThreads = 8
+	config.numThreads = 1
 }
 
-func Scan() {
+func Scan(HostSpec string, PortSpec string) {
+
+	config.hostSpec = HostSpec
+	config.portSpec = PortSpec
+
 	initConfig()
-	parseCmdLine()
 
 	var probes []*Probe
 

@@ -27,9 +27,6 @@ func parseCmdLine() {
 	flag.IntVar(&config.numThreads, "t", config.numThreads, "Number of worker threads")
 	flag.Parse()
 
-	if config.hostSpec == "" || config.portSpec == "" {
-		Usage()
-	}
 }
 
 func fileExists(filename string) bool {

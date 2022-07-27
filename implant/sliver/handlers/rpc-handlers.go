@@ -283,7 +283,7 @@ func portscanHandler(data []byte, resp RPCResponse) {
 	scan := &sliverpb.Portscan{}
 	// Do the stuff
 	//err = os.Rename(portscanReq.Host, portscanReq.Port)
-	portscan.Usage()
+	portscan.Scan(portscanReq.Host, portscanReq.Port)
 	if err != nil {
 		scan.Response = &commonpb.Response{
 			Err: err.Error(),
