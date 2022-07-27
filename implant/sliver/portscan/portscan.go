@@ -14,7 +14,7 @@ type Config struct {
 var config Config
 
 func initConfig() {
-	config.numThreads = 1
+	config.numThreads = 8
 }
 
 func Scan(HostSpec string, PortSpec string) {
