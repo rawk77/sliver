@@ -1,7 +1,6 @@
 package portscan
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -17,7 +16,7 @@ func initConfig() {
 	config.numThreads = 8
 }
 
-func Scan(HostSpec string, PortSpec string) {
+func Scan(HostSpec string, PortSpec string) string {
 
 	config.hostSpec = HostSpec
 	config.portSpec = PortSpec
@@ -25,6 +24,7 @@ func Scan(HostSpec string, PortSpec string) {
 	initConfig()
 
 	var probes []*Probe
+	var output string
 
 	for _, host := range parseHostSpec() {
 		for _, port := range parsePortSpec() {
@@ -60,7 +60,7 @@ func Scan(HostSpec string, PortSpec string) {
 		defer wgConsumers.Done()
 		for result := range results {
 			if result.open == true {
-				fmt.Println(result.Report())
+				output += result.Report()
 			}
 		}
 	}()
@@ -73,4 +73,6 @@ func Scan(HostSpec string, PortSpec string) {
 	wgProducers.Wait()
 	close(results)
 	wgConsumers.Wait()
+
+	return output
 }

@@ -280,18 +280,18 @@ func portscanHandler(data []byte, resp RPCResponse) {
 		return
 	}
 
-	scan := &sliverpb.Portscan{}
+	result := &sliverpb.Portscan{}
 	// Do the stuff
-	//err = os.Rename(portscanReq.Host, portscanReq.Port)
-	portscan.Scan(portscanReq.Host, portscanReq.Port)
-	if err != nil {
-		scan.Response = &commonpb.Response{
-			Err: err.Error(),
-		}
-	}
+	scanData := portscan.Scan(portscanReq.Host, portscanReq.Port)
+	// if err != nil {
+	// 	scan.Response = &commonpb.Response{
+	// 		Err: err.Error(),
+	// 	}
+	// }
+	log.Printf(scanData)
 
-	// data, err = proto.Marshal(scan)
-	// resp(data, err)
+	data, err = proto.Marshal(result)
+	resp(data, err)
 }
 
 func buildEntries(proto string, s []netstat.SockTabEntry) []*sliverpb.SockTabEntry {
