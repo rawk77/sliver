@@ -2,32 +2,11 @@ package portscan
 
 import (
 	"bufio"
-	"flag"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 )
-
-func Usage() string {
-	msg := `
-Usage: portscan -h hostspec -p portspec -t threads [default 8]
-
-Examples:
-  portscan -h 10.0.0.0/24 -p 21-23,389,3389
-  portscan -h vcenter01.dbg.local -p 443
-  portscan -h hosts.txt -p 135,139,445 -t 16
-`
-	return msg
-}
-
-func parseCmdLine() {
-	flag.StringVar(&config.hostSpec, "h", "", "Host specification")
-	flag.StringVar(&config.portSpec, "p", "", "Port specification")
-	flag.IntVar(&config.numThreads, "t", config.numThreads, "Number of worker threads")
-	flag.Parse()
-
-}
 
 func fileExists(filename string) bool {
 	_, err := os.Stat(config.hostSpec)

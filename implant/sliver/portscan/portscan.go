@@ -7,21 +7,15 @@ import (
 type Config struct {
 	hostSpec   string
 	portSpec   string
-	numThreads int
+	numThreads int32
 }
 
 var config Config
 
-func initConfig() {
-	config.numThreads = 8
-}
-
-func Scan(HostSpec string, PortSpec string) string {
-
-	config.hostSpec = HostSpec
-	config.portSpec = PortSpec
-
-	initConfig()
+func Scan(hostSpec string, portSpec string, numThreads int32) string {
+	config.hostSpec = hostSpec
+	config.portSpec = portSpec
+	config.numThreads = numThreads
 
 	var probes []*Probe
 	var output string
@@ -37,10 +31,10 @@ func Scan(HostSpec string, PortSpec string) string {
 
 	var wgProducers sync.WaitGroup
 	var wgConsumers sync.WaitGroup
-	wgProducers.Add(config.numThreads)
+	wgProducers.Add(int(config.numThreads))
 	wgConsumers.Add(1)
 
-	for i := 0; i < config.numThreads; i++ {
+	for i := 0; i < int(config.numThreads); i++ {
 		go func() {
 			defer wgProducers.Done()
 

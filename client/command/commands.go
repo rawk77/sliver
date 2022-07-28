@@ -1884,6 +1884,7 @@ func BindCommands(con *console.SliverConsoleClient) {
 		LongHelp: help.GetHelpFor([]string{consts.PortscanStr}),
 		Flags: func(f *grumble.Flags) {
 			f.Int("t", "timeout", defaultTimeout, "command timeout in seconds")
+			f.Int("T", "threads", 32, "number of threads")
 		},
 		Args: func(a *grumble.Args) {
 			a.String("host", "hosts to scan")

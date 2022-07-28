@@ -280,8 +280,8 @@ func portscanHandler(data []byte, resp RPCResponse) {
 		return
 	}
 
-	output := portscan.Scan(portscanReq.Host, portscanReq.Port)
-	portscan := &sliverpb.Portscan{Output: output}	
+	output := portscan.Scan(portscanReq.Host, portscanReq.Port, portscanReq.Threads)
+	portscan := &sliverpb.Portscan{Output: output}
 
 	data, err = proto.Marshal(portscan)
 	resp(data, err)

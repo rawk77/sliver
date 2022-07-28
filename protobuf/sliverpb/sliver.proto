@@ -145,6 +145,7 @@ message Ifconfig {
 message PortscanReq {
   string Host = 1;
   string Port = 2;
+  int32 Threads = 3;
 
   commonpb.Request Request = 9;
 }

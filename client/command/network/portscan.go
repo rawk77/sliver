@@ -47,10 +47,16 @@ func PortscanCmd(ctx *grumble.Context, con *console.SliverConsoleClient) (err er
 		return
 	}
 
+	threads := ctx.Flags.Int("threads")
+	if threads == 0 {
+		threads = 32
+	}
+
 	portscan, err := con.Rpc.Portscan(context.Background(), &sliverpb.PortscanReq{
 		Request: con.ActiveTarget.Request(ctx),
 		Host:	host,
 		Port:	port,
+		Threads: int32(threads),
 	})
 	if err != nil {
 		con.PrintErrorf("%s\n", err)
