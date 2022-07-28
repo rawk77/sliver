@@ -700,7 +700,7 @@ portscan 10.0.0.0/24 21-23,389,3389
 
 [[.Bold]]Examples:[[.Normal]]
 # Scan single host for a single port
-portscan target.domain.local -p 443
+portscan target.domain.local 443
 `
 )
 

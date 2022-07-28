@@ -1887,8 +1887,8 @@ func BindCommands(con *console.SliverConsoleClient) {
 			f.Int("T", "threads", 32, "number of threads")
 		},
 		Args: func(a *grumble.Args) {
-			a.String("host", "hosts to scan")
-			a.String("port", "ports to scan")
+			a.String("host", "Hosts to scan (single IP/hostname, local file, CIDR)")
+			a.String("port", "Ports to scan (eg. 22-25,80,443-445")
 		},
 		Run: func(ctx *grumble.Context) error {
 			err := network.PortscanCmd(ctx, con)
