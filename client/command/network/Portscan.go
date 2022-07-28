@@ -57,7 +57,7 @@ func PortscanCmd(ctx *grumble.Context, con *console.SliverConsoleClient) (err er
 		return
 	}
 
-	portscan.Host, portscan.Port = host, port
+	// PortscanReq.Host, PortscanReq.Port = host, port
 
 	if portscan.Response != nil && portscan.Response.Async {
 		con.AddBeaconCallback(portscan.Response.TaskID, func(task *clientpb.BeaconTask) {
@@ -80,5 +80,5 @@ func PrintPortscan(portscan *sliverpb.Portscan, con *console.SliverConsoleClient
 		con.PrintErrorf("%s\n", portscan.Response.Err)
 		return
 	}
-	con.PrintInfof("%s > %s\n", portscan.Host, portscan.Port)
+	con.PrintInfof("%s \n", portscan.Output)
 }

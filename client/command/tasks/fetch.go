@@ -423,6 +423,7 @@ func renderTaskResponse(task *clientpb.BeaconTask, con *console.SliverConsoleCli
 			con.PrintErrorf("Failed to decode task response: %s\n", err)
 			return
 		}
+		network.PrintPortscan(portscan, con)
 
 	case sliverpb.MsgNetstatReq:
 		netstat := &sliverpb.Netstat{}

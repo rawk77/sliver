@@ -150,8 +150,7 @@ message PortscanReq {
 }
 
 message Portscan {
-  string Host = 1;
-  string Port = 2;
+  string Output = 1;
 
   commonpb.Response Response = 9;
 }
