@@ -60,7 +60,7 @@ func Scan(HostSpec string, PortSpec string) string {
 		defer wgConsumers.Done()
 		for result := range results {
 			if result.open == true {
-				output += result.Report()
+				output += result.Report() + "\n"
 			}
 		}
 	}()

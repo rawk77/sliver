@@ -80,5 +80,5 @@ func PrintPortscan(portscan *sliverpb.Portscan, con *console.SliverConsoleClient
 		con.PrintErrorf("%s\n", portscan.Response.Err)
 		return
 	}
-	con.PrintInfof("%s \n", portscan.Output)
+	con.PrintInfof("Scan results\n%s \n", portscan.Output)
 }
