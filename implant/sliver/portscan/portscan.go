@@ -1,6 +1,7 @@
 package portscan
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -12,7 +13,7 @@ type Config struct {
 
 var config Config
 
-func Scan(hostSpec string, portSpec string, numThreads int32) string {
+func Scan(hostSpec string, portSpec string, numThreads int32) (string, error) {
 	config.hostSpec = hostSpec
 	config.portSpec = portSpec
 	config.numThreads = numThreads
@@ -24,6 +25,10 @@ func Scan(hostSpec string, portSpec string, numThreads int32) string {
 		for _, port := range parsePortSpec() {
 			probes = append(probes, NewProbe(host, port))
 		}
+	}
+
+	if len(probes) == 0 {
+		return "", fmt.Errorf("No host/port pairs could be loaded")
 	}
 
 	input := make(chan *Probe, config.numThreads)
@@ -68,5 +73,9 @@ func Scan(hostSpec string, portSpec string, numThreads int32) string {
 	close(results)
 	wgConsumers.Wait()
 
-	return output
+	if output == "" {
+		output = "No open ports were found"
+	}
+
+	return output, nil
 }
